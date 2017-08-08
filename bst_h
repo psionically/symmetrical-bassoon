@@ -1,0 +1,80 @@
+//************************  BST.h  **************************
+//                 generic binary search tree
+
+#include <iostream>
+using namespace std;
+
+#ifndef BST_H
+#define BST_H
+
+template<class T>
+class BSTNode {
+public:
+    BSTNode() {             //default constructor
+        left = right = 0; 
+    }
+    BSTNode(const T& e, BSTNode<T> *l = 0, BSTNode<T> *r = 0) {     //overload 
+        el = e; left = l; right = r; 
+    }
+    T el;
+    BSTNode<T> *left, *right;   //pointers
+};
+
+template<class T>
+class BST {
+public:
+    BST() {             //constructor
+        root = 0; 
+    }
+    ~BST() 
+    {
+    	clear();
+	}
+	
+	void clear()
+	{
+		clear(root);
+		root = 0;
+	}
+
+    void preorder() {       
+        preorder(root);   
+    }
+    
+    void inorder() { 
+        inorder(root); 
+    }
+    
+    void postorder() { 
+        postorder(root);  
+    }
+    
+    void showStructure();
+    void showHelper(BSTNode<T>* p);
+    void insert(const T& );
+    bool remove(const T& );		//delete by merging
+    void findAndRemove(BSTNode<T>*&);
+    bool isEmpty() const
+    {
+    	return root == 0;
+	}
+	T* search(const T& el) const
+	{
+		return search(root, el);
+	}
+	void balance(T*, int, int);
+	
+protected:
+	BSTNode<T>* root;
+	void clear(BSTNode<T>*);
+	T* search(BSTNode<T>* p, const T& el) const;
+	void preorder(BSTNode<T>*);
+	void inorder(BSTNode<T>*);
+	void postorder(BSTNode<T>*);
+	virtual void visit(BSTNode<T>* p)
+	{
+		cout<<p->el<< ' ';
+	}
+};
+
+#endif
