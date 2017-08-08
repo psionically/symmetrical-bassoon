@@ -1,0 +1,251 @@
+//----------------------------------------------------------------------------
+// BST main
+//-----------------------------------------------------------------------------
+
+#include <iostream>
+#include "BST.h"
+
+using namespace std;
+
+#ifndef BST_CPP
+#define BST_CPP
+
+//----------------------------------------------------------------------------
+// This function will sort the items in tree using the preorder method.
+//----------------------------------------------------------------------------
+template<class T>
+void BST<T>::inorder(BSTNode<T>* p)
+{
+    if(p != 0)
+    {
+        inorder(p->left);
+        visit(p);
+        inorder(p->right);
+    }
+}
+//----------------------------------------------------------------------------
+// This function will sort the items in tree using the preorder method.
+//----------------------------------------------------------------------------
+template<class T>
+void BST<T>::preorder(BSTNode<T>* p)
+{
+    if (p != 0) 
+    {
+        visit(p);
+        preorder(p->left);
+        preorder(p->right);
+    }
+}
+//----------------------------------------------------------------------------
+// This function will sort the items in tree using the postorder method.
+//----------------------------------------------------------------------------
+template<class T>
+void BST<T>::postorder(BSTNode<T>* p) 
+{
+    if (p != 0) {
+        postorder(p->left);
+        postorder(p->right);
+        visit(p);
+    }
+}
+//----------------------------------------------------------------------------
+// This function will display the tree as a tree-like structure.
+//----------------------------------------------------------------------------
+template<class T>
+void BST<T>::showStructure()
+{
+	showHelper(root);
+}
+//----------------------------------------------------------------------------
+// This function helps the showStructure function.
+//----------------------------------------------------------------------------
+template<class T>
+void BST<T>::showHelper(BSTNode<T>* p)
+{
+	if(p != NULL)
+	{
+		showHelper(p->left);
+		cout<< p->el << " ";
+		showHelper(p->right);
+	}
+}
+//----------------------------------------------------------------------------
+// This function will insert a node into the tree.
+//
+// This function has a Big-O performance of O(n) where n represents the 
+// the number of times through the while loop. This is because it is 
+// linear and it is having to find an item within an unbalanced tree.
+//----------------------------------------------------------------------------
+template<class T>
+void BST<T>::insert(const T& el)
+{
+	BSTNode<T> *p = root, *prev = 0;
+	
+	while(p != 0)	//determines place for new node
+	{
+		prev = p;
+		
+		if(el < p->el)
+		{
+			p = p->left;
+		}
+		else
+		{
+			p = p->right;
+		}
+	}
+	
+	if(root == 0)	//empty tree
+	{
+		root = new BSTNode<T>(el);
+	}
+	else if(el < prev->el)
+	{
+		prev->left = new BSTNode<T>(el);
+	}
+	else
+	{
+		prev ->right = new BSTNode<T>(el);
+	}
+}
+//----------------------------------------------------------------------------
+// This function helps the remove function.
+//----------------------------------------------------------------------------
+template<class T>
+void BST<T>::findAndRemove(BSTNode<T>*& node)		//delete by merging
+{
+	BSTNode<T> *temp = node;
+	
+	if(node != 0)
+	{
+		if(!node->right)
+		{
+			node = node->left;
+		}
+		else if(node->left == 0)
+		{
+			temp = node->right;
+		}
+		else
+		{
+			temp = node->left;
+			
+			while(temp->right != 0)
+			{
+				temp = temp->right;
+				temp->right = node->right;
+				temp = node;
+				node = node->left;
+			}
+		}
+		
+		delete temp;
+	}
+}
+
+//----------------------------------------------------------------------------
+// This function will remove a node in the tree.
+//
+// This function has a Big-O performance of O(n) where n represents the 
+// the number of times through the while loop. This is because it is 
+// linear and finding an item within an unbalanced tree.
+//----------------------------------------------------------------------------
+template<class T>
+bool BST<T>::remove(const T& el)	//delete by merging
+{
+	BSTNode<T> *node = root, *prev = 0;
+	while (node != 0)
+	{
+		if(node->el == el)
+		{
+			break;
+			prev = node;
+		}
+		if(node != 0 && node->el == el)
+		{
+			if(node == root)
+			{
+				findAndRemove(root);
+			}
+			else if(prev->left == node)
+			{
+				findAndRemove(prev->left);
+			}
+			else
+			{
+				findAndRemove(prev->right);
+			}	
+			
+			return true;
+		}
+		else if(root != 0)
+		{
+			cout<<"el "<<el<<" is not in tree"<<endl;
+			return false;
+		}
+		else
+		{
+			cout<<"empty tree"<<endl;
+			return false;
+		} 
+	}
+}
+
+//----------------------------------------------------------------------------
+// This function will search through the tree.
+//
+// This function has a Big-O performance of O(n) where n represents the 
+// the number of times through the while loop. This is because it is 
+// linear and finding an item within an unbalanced tree.
+//----------------------------------------------------------------------------
+template<class T>
+T* BST<T>::search(BSTNode<T>* p, const T& el) const
+{
+	while(p != 0)
+	{
+		if(el == p->el)
+		{
+			return &p->el;
+		}
+		else if(el < p->el)
+		{
+			p = p->left;
+		}
+		else
+		{
+			p = p->right;
+		}
+	}
+	
+	return 0;
+}
+//----------------------------------------------------------------------------
+// This function will clear the tree.
+//----------------------------------------------------------------------------
+template<class T>
+void BST<T>::clear(BSTNode<T>* p)
+{
+	if(p != NULL)
+	{
+		clear(p->left);
+		clear(p->right);
+		
+		delete p;
+	}
+}
+//----------------------------------------------------------------------------
+// This function will balance the tree.
+//----------------------------------------------------------------------------
+template<class T>
+void BST<T>::balance (T data[], int start, int end)
+{
+	if(start <= end)
+	{
+		int middle = (start + end)/2;
+		insert(data[middle]);
+		balance(data, start, middle-1);
+		balance(data, middle+1,end);
+	}
+}
+
+#endif
